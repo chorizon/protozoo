@@ -124,21 +124,40 @@ def make_task(ssh, task_name, features):
 	
 	except:
 
-		logging.warning("Error using sftp:", sys.exc_info()[0])
+		logging.warning("Error using sftp:"+ str(sys.exc_info()[0]))
 		exit(1)
 		
+	#Create tmp if not exists
+	
+	tmp_path=ConfigClass.remote_path+'/'+ConfigClass.tmp_sftp_path;
+	
+	try:
+	
+		stat_tmp=sftp.stat(tmp_path)
+		
+	except FileNotFoundError:
+		
+		#Mkdir directory
+		sftp.mkdir(tmp_path)
+	
+	#check_tmp=Path(tmp_path)
+	
+	#if not check_tmp.exists():
+		#check_tmp.mkdir(0o755, True)
+	
 	#Clean tmp dir first
+	
 	
 	try:
 		
-		stdin, stdout, stderr = ssh.exec_command('rm -f -r '+ConfigClass.remote_path+'/'+ConfigClass.tmp_sftp_path+'/*')
+		stdin, stdout, stderr = ssh.exec_command('rm -f -r '+tmp_path+'/*')
 		
 		if stdout.channel.recv_exit_status()>0:
 			logging.warning("Error: cannot clean the tmp path")
 			exit(1)
 			
 	except:
-		logging.warning("Error deleting tmp:", sys.exc_info()[0])
+		logging.warning("Error deleting tmp:"+ str(sys.exc_info()[0]))
 		exit(1)
 	
 	#logging.info("Running actions..., you can see the progress in this log: "+path_log)
@@ -192,7 +211,7 @@ def make_task(ssh, task_name, features):
 			
 		except:
 
-			logging.warning("Error uploading files:", sys.exc_info()[0])
+			logging.warning("Error uploading files:"+ str(sys.exc_info()[0]))
 			exit(1)
 		
 		#p_count+=sum_count
@@ -215,7 +234,7 @@ def make_task(ssh, task_name, features):
 			
 			except:
 
-				logging.warning("Error uploading files:", sys.exc_info()[0])
+				logging.warning("Error uploading files:"+ str(sys.exc_info()[0]))
 				exit(1)
 			
 			logging.info("Uploaded file:"+extra_source_file)
@@ -251,7 +270,7 @@ def make_task(ssh, task_name, features):
 			logging.warning("Error: cannot connect to the server "+server+" "+str(e))
 			exit(1)
 		except:
-			logging.warning("Error: A script show error"+sys.exc_info()[0])
+			logging.warning("Error: A script show error"+str(sys.exc_info()[0]))
 	
 	ssh.close()
 	
@@ -286,7 +305,7 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 			
 				#Check if error
 				if p.exitcode>0:
-					print(Style.BRIGHT+Fore.WHITE+Back.RED+"Error: server "+k+" report a error. Please, see in the log the fail.")
+					print("\r"+Style.BRIGHT+Fore.WHITE+Back.RED+"Error: server "+k+" report an error. Please, see in the log the fail.")
 					if ConfigClass.stop_if_error == True:
 						finish=False
 						finish_processes=True
@@ -307,7 +326,7 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 		print(Style.BRIGHT+Fore.WHITE+Back.RED+"The process have errors and you specified close the operations if fail exists.The pendient processes were finished")
 		exit(1)
 	
-	return (percent, process, num_forks)
+	return (process, num_forks, percent)
 	
 
 def start():
@@ -354,10 +373,6 @@ def start():
 	task=args.task.replace('.','_')
 	
 	task=args.task.replace('/','.')
-	
-	#if task=='':
-	#	print("Task have a slash..., delete it")
-	#	exit(1)
 	
 	# Load Profile, you can put custom configclass configs in it
 	
@@ -477,8 +492,6 @@ def start():
 			#p_server[features['hostname']].join()
 			num_forks+=1
 			
-			#is_alive()
-			
 			#Check forks if error or stop, if stop num_forks-=1 and clean dictionary
 			#If error, wait to the all process finish
 			
@@ -487,11 +500,6 @@ def start():
 			if num_forks >= ConfigClass.num_of_forks:
 				p_server, num_forks, p_count=check_process(p_server, num_forks, True, p_count, c_servers)
 			
-			#If num_forks >= ConfigClass.num_of_forks
-			
-				#Check forks if someone stop
-			
-				#If stop num_forks-=1
 		p_server, num_forks, p_count=check_process(p_server, num_forks, False, p_count, c_servers)
 		
 	print(Style.BRIGHT +"All tasks executed")
