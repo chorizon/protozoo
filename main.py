@@ -5,6 +5,7 @@ import os
 import argparse
 import paramiko
 import logging
+import getpass
 from pathlib import Path
 from protozoo.configclass import ConfigClass
 from protozoo.configtask import ConfigTask
@@ -29,18 +30,19 @@ def show_progress(percent):
 		print("\r")
 		
 
-def make_task(ssh, task_name, features):
+def make_task(rsa, ssh, task_name, features):
 	
 	server=features['hostname']
 	
 	#Opening connection with log
-		
-	path_log=ConfigClass.logs_path+'/'+server+'_'+task_name+'.log'
-		
-	logging.basicConfig(format='%(message)s', filename=path_log,level=logging.INFO)
 	
-	#print(Style.BRIGHT +"Executing tasks with codename "+task_name+" in host "+server+"...")
-	#print(Style.BRIGHT+ "Executing tasks with codename "+task_name+" in host "+server+".\nYou can see the progress in this log: "+path_log+"\n")
+	logs_path=ConfigClass.logs_path+'/'+server
+	
+	create_dir(logs_path)
+	
+	path_log=logs_path+'/'+task_name+'.log'
+		
+	logging.basicConfig(format='%(levelname)s: %(message)s', filename=path_log,level=logging.INFO)
 	
 	# Reload config for the task
 	
@@ -98,7 +100,7 @@ def make_task(ssh, task_name, features):
 	
 	try:
 	
-		ssh.connect(server, port=ConfigClass.port, username=ConfigClass.remote_user, password=ConfigClass.password_key, pkey=None, key_filename=ConfigClass.private_key, timeout=None, allow_agent=True, look_for_keys=True, compress=False, sock=None, gss_auth=False, gss_kex=False, gss_deleg_creds=True, gss_host=None, banner_timeout=None)
+		ssh.connect(server, port=ConfigClass.port, username=ConfigClass.remote_user, password=None, pkey=rsa, key_filename=ConfigClass.private_key, timeout=None, allow_agent=True, look_for_keys=True, compress=False, sock=None, gss_auth=False, gss_kex=False, gss_deleg_creds=True, gss_host=None, banner_timeout=None)
 	
 	except paramiko.SSHException as e:
 		logging.warning("Error: cannot connect to the server "+server+" "+str(e))
@@ -287,7 +289,9 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 					if ConfigClass.stop_if_error == True:
 						finish=False
 						finish_processes=True
-						
+						ConfigClass.num_errors+=1
+				else:
+					ConfigClass.num_success+=1
 				
 				process_to_delete.append(k)
 				num_forks-=1
@@ -305,7 +309,42 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 		exit(1)
 	
 	return (process, num_forks, percent)
+
+# Prepare keys for ssh connection
+def prepare_ssh_keys(password, num_tries=0):
 	
+	try:
+		
+		rsa=paramiko.RSAKey.from_private_key_file(ConfigClass.private_key, password)
+		
+	except (paramiko.ssh_exception.PasswordRequiredException, paramiko.ssh_exception.SSHException):
+	
+		num_tries+=1
+	
+		if num_tries<4:
+		
+			p=getpass.getpass('Password:')
+			
+			rsa=prepare_ssh_keys(p, num_tries)
+		
+		else:
+		
+			print(Style.BRIGHT+Fore.WHITE+Back.RED+"This private key need a password if you want execute the tasks...")
+		
+			return None
+	
+	return rsa
+
+def create_dir(path, permissions=0o755):
+
+	p=Path(path)
+	
+	if not p.exists():
+		p.mkdir(permissions, True)
+		
+	if p.exists() and p.is_dir()==False:
+		print("Error: exists a file with the same path of directory to create: "+path)
+		exit(1)
 
 def start():
 	
@@ -344,7 +383,7 @@ def start():
 	
 	ConfigClass.private_key=home+'/.ssh/id_rsa'
 	
-	ConfigClass.password_key=''
+	ConfigClass.password_key=None
 
 	task_name=os.path.basename(args.task)
 	
@@ -404,14 +443,16 @@ def start():
 	
 	#Check logs folder
 	
-	p_logs=Path(ConfigClass.logs_path)
+	#p_logs=Path(ConfigClass.logs_path)
 	
-	if not p_logs.exists():
-		p_logs.mkdir(0o755, True)
+	#if not p_logs.exists():
+	#	p_logs.mkdir(0o755, True)
 		
-	if p_logs.exists() and p_logs.is_dir()==False:
-		print("Error: exists a file with the same path of logs. Delete the file or change ConfigClass.logs_path ")
-		exit(1)
+	#if p_logs.exists() and p_logs.is_dir()==False:
+	#	print("Error: exists a file with the same path of logs. Delete the file or change ConfigClass.logs_path ")
+	#	exit(1)
+	
+	create_dir(ConfigClass.logs_path)
 	
 	#Prepare sftp and ssh
 	
@@ -423,6 +464,13 @@ def start():
 	if ConfigClass.deny_missing_host_key == False:
 		
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		
+	#Prepare ssh keys
+	
+	rsa=prepare_ssh_keys(ConfigClass.password_key)
+	
+	if rsa==None:
+		exit(1)
 	
 	#Make a trial with tmp path in remote server. Need this check because i don't want delete neccesary files from the server. 
 	
@@ -431,18 +479,6 @@ def start():
 	if delete_tmp_files == "//*":
 		print("Error: your remote paths are bad defined")
 		exit(1)
-	
-	# Prepare keys for ssh connection
-	
-	#try:
-	
-		#rsa=paramiko.rsakey.RSAKey(msg=None, data=None, filename=ConfigClass.private_key, password=ConfigClass.password_key, vals=None, file_obj=None)
-	#	rsa=paramiko.RSAKey.from_private_key_file(ConfigClass.private_key, ConfigClass.password_key)
-		
-	#except paramiko.ssh_exception.PasswordRequiredException:
-		
-	#	print("This private key need a password")
-	#	exit(1)
 		
 	
 	# Iterate profile.
@@ -455,17 +491,23 @@ def start():
 	
 	if __name__ == 'protozoo.main':
 		
-		c_servers=round(100/len(profile.servers))
+		num_servers=len(profile.servers)
+		
+		c_servers=round(100/num_servers)
 		
 		p_count=0
 		
-		print(Fore.YELLOW +"Executing tasks...")
+		print(Fore.WHITE+Style.BRIGHT +"Welcome to Protozoo!!")
+		print(Fore.YELLOW +"Executing task <"+task_name+"> in "+str(num_servers)+" machines")
+		
+		#$climate->white()->bold()->out('Welcome to Protozoo');
+		#$climate->yellow()->out('Executing task <'.$options['task'].'> in '.$c_servers.' machines');
 	
 		show_progress(p_count)
 	
 		for features in profile.servers:
 			
-			p_server[features['hostname']] = Process(target=make_task, args=(client, task_name, features))
+			p_server[features['hostname']] = Process(target=make_task, args=(rsa, client, task_name, features))
 			p_server[features['hostname']].start()
 			#p_server[features['hostname']].join()
 			num_forks+=1
@@ -479,6 +521,10 @@ def start():
 				p_server, num_forks, p_count=check_process(p_server, num_forks, True, p_count, c_servers)
 			
 		p_server, num_forks, p_count=check_process(p_server, num_forks, False, p_count, c_servers)
+	
+	#$climate->yellow()->bold()->out('Results: success:'.ConfigPanel::$num_success.', fails:'.ConfigPanel::$num_errors);
+	
+	print(Fore.YELLOW+Style.BRIGHT +"Results: success:"+str(ConfigClass.num_success)+', fails:'+str(ConfigClass.num_errors))
 	
 	print(Style.BRIGHT +"All tasks executed")
 	

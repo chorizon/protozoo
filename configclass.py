@@ -33,7 +33,7 @@ class ConfigClass:
 	
 	private_key=''
 	
-	password_key=''
+	password_key=None
 
 	port=22
 	
@@ -44,3 +44,7 @@ class ConfigClass:
 	num_of_forks=10
 	
 	stop_if_error=False
+	
+	num_errors=0
+	
+	num_success=0

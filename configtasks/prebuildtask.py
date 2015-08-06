@@ -19,6 +19,16 @@ ApacheAction.script_interpreter='python3'
 ApacheAction.parameters=''
 ApacheAction.extra_files=['files/spanel.conf']
 
+MariaDBAction=ConfigAction()
+
+MariaDBAction.codename='mariadb'
+MariaDBAction.name='MariaDB Database Server'
+MariaDBAction.description='Script for install the most famous db server in debian jessie'
+MariaDBAction.script_path='libraries/install_mariadb.py'
+MariaDBAction.script_interpreter='python3'
+MariaDBAction.parameters=''
+MariaDBAction.extra_files=[]
+
 #ConfigPanel::$scripts['agent']['apache']=array('name' => 'Apache Webserver', 'description' => 'Script for install the most famous webserver in the world for debian jessie', 'script_path' => 'libraries/install_apache.py', 'script_interpreter' => 'python3', 'service' => 'webserver');
 
 #ConfigPanel::$scripts['agent']['python3']=array('name' => 'Python Language', 'description' => 'Script language very powerful, very used for spanel for internal tasks', 'script_path' => 'libraries/install_python.sh', 'script_interpreter' => 'sh');
