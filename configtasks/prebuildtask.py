@@ -6,7 +6,7 @@ Python3Action.name='Python Language'
 Python3Action.description='Script language very powerful, very used for spanel for internal tasks'
 Python3Action.script_path='libraries/install_python.sh'
 Python3Action.script_interpreter='sh'
-Python3Action.parameters=[]
+Python3Action.parameters=''
 Python3Action.extra_files=[]
 
 ApacheAction=ConfigAction()
@@ -16,7 +16,7 @@ ApacheAction.name='Apache Webserver'
 ApacheAction.description='Script for install the most famous webserver in the world for debian jessie'
 ApacheAction.script_path='libraries/install_apache.py'
 ApacheAction.script_interpreter='python3'
-ApacheAction.parameters=[]
+ApacheAction.parameters=''
 ApacheAction.extra_files=['files/spanel.conf']
 
 #ConfigPanel::$scripts['agent']['apache']=array('name' => 'Apache Webserver', 'description' => 'Script for install the most famous webserver in the world for debian jessie', 'script_path' => 'libraries/install_apache.py', 'script_interpreter' => 'python3', 'service' => 'webserver');

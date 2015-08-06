@@ -11,5 +11,5 @@ class ConfigAction:
 	description=''
 	script_path=''
 	script_interpreter=''
-	parameters=[]
+	parameters=''
 	extra_files=[]

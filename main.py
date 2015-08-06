@@ -2,12 +2,9 @@
 
 import sys
 import os
-import psutil
-import re
 import argparse
 import paramiko
 import logging
-import time
 from pathlib import Path
 from protozoo.configclass import ConfigClass
 from protozoo.configtask import ConfigTask
@@ -15,6 +12,8 @@ from platform import python_version_tuple
 from importlib import import_module, reload
 from colorama import init, Fore, Back, Style
 from multiprocessing import Process
+
+#import resource
 
 def show_progress(percent):
 	
@@ -185,24 +184,14 @@ def make_task(ssh, task_name, features):
 			
 			source_file=p+'/'+features['os_codename']+'/'+action.script_path
 			
-			tpath=Path(source_file)
+			#tpath=Path(source_file)
 			
-			if tpath.is_file():
+			if os.path.isfile(source_file):
 				break
 		
 		#Destiny path in remote server
 		
 		dest_file=ConfigClass.tmp_sftp_path+'/'+script_file
-		
-		#Used for counter
-		
-		#num_files=1+len(action.extra_files)
-		
-		#sum_count=round(100/num_files);
-		
-		#p_count=0
-		
-		#show_progress(p_count, script_file)
 		
 		#Upload script file to execute
 		
@@ -215,11 +204,7 @@ def make_task(ssh, task_name, features):
 			logging.warning("Error uploading files:"+ str(sys.exc_info()[0]))
 			exit(1)
 		
-		#p_count+=sum_count
-		
 		logging.info("Uploaded file:"+source_file)
-		
-		#show_progress(p_count, script_file)
 		
 		#Upload more files
 		
@@ -239,18 +224,10 @@ def make_task(ssh, task_name, features):
 				exit(1)
 			
 			logging.info("Uploaded file:"+extra_source_file)
-			
-			#p_count+=sum_count
-			
-			#show_progress(p_count, extra_file)
-		
-		#if p_count < 100:
-			#p_count=100
-			#show_progress(p_count, "")
 	
 		#Execute the script
 		
-		command_to_execute=action.script_interpreter+" "+dest_file
+		command_to_execute=action.script_interpreter+" "+dest_file+" "+action.parameters
 		
 		try:
 	
@@ -332,6 +309,12 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 
 def start():
 	
+	pyv=python_version_tuple()
+
+	if pyv[0]!='3':
+		print('Need python 3 for execute this script')
+		sys.exit(1)
+	
 	parser = argparse.ArgumentParser(description='An IT tool for make tasks in servers. Is used for SPanel for add new modules to the servers and others tasks')
 
 	parser.add_argument('--task', help='The task to execute', required=True)
@@ -341,12 +324,6 @@ def start():
 	args = parser.parse_args()
 	
 	home=os.getenv("HOME")
-	
-	pyv=python_version_tuple()
-
-	if pyv[0]!='3':
-		print('Need python 3 for execute this script')
-		sys.exit(1)
 	
 	#Init colored terminal
 	
@@ -394,9 +371,9 @@ def start():
 		
 		task_path_route=task_path.replace('.','/')+'.py'
 		
-		tpath=Path(task_path_route)
+		#tpath=Path(task_path_route)
 		
-		if tpath.is_file():
+		if os.path.isfile(task_path_route):
 			break
 	
 	# Load config for the task
@@ -504,4 +481,6 @@ def start():
 		p_server, num_forks, p_count=check_process(p_server, num_forks, False, p_count, c_servers)
 	
 	print(Style.BRIGHT +"All tasks executed")
+	
+	#print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1000)
 
