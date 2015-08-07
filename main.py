@@ -305,6 +305,8 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 			del process_to_delete[k_p]
 		
 		if(len(process)==0):
+			percent=100
+			show_progress(percent)
 			break
 	
 	if finish_processes==True:
@@ -326,7 +328,7 @@ def prepare_ssh_keys(password, num_tries=0):
 	
 		if num_tries<4:
 		
-			p=getpass.getpass('Password:')
+			p=getpass.getpass('Password for your ssh key:')
 			
 			rsa=prepare_ssh_keys(p, num_tries)
 		
@@ -361,7 +363,7 @@ def start():
 
 	parser.add_argument('--task', help='The task to execute', required=True)
 	parser.add_argument('--profile', help='The profile used for make tasks', required=False)
-	parser.add_argument('--resume', help='If error, begin the tasks in the server where the fail ', required=False)
+	parser.add_argument('--resume', help='If error, begin the tasks in the server where the fail ', required=False, nargs='?', const='1')
 	
 	args = parser.parse_args()
 	
@@ -493,7 +495,7 @@ def start():
 		
 		#Open file where save servers failed and last server executed fine.
 		
-		f=open(".resume.py", "w+")
+		file_resume=open(".resume.py", "w+")
 		
 		print(Fore.WHITE+Style.BRIGHT +"Welcome to Protozoo!!")
 		print(Fore.YELLOW +"Executing task <"+task_name+"> in "+str(num_servers)+" machines")
@@ -516,8 +518,6 @@ def start():
 				p_server, num_forks, p_count=check_process(p_server, num_forks, True, p_count, c_servers)
 			
 		p_server, num_forks, p_count=check_process(p_server, num_forks, False, p_count, c_servers)
-	
-	#$climate->yellow()->bold()->out('Results: success:'.ConfigPanel::$num_success.', fails:'.ConfigPanel::$num_errors);
 	
 	print(Fore.YELLOW+Style.BRIGHT +"Results: success:"+str(ConfigClass.num_success)+', fails:'+str(ConfigClass.num_errors))
 	

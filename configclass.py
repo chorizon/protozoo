@@ -48,3 +48,5 @@ class ConfigClass:
 	num_errors=0
 	
 	num_success=0
+	
+	file_resume=None
