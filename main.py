@@ -286,10 +286,13 @@ def check_process(process, num_forks, finish=True, percent=0, c_servers=0):
 				#Check if error
 				if p.exitcode>0:
 					print("\r"+Style.BRIGHT+Fore.WHITE+Back.RED+"Error: server "+k+" report an error. Please, see in the log the fail.")
+					
+					ConfigClass.num_errors+=1
+					
 					if ConfigClass.stop_if_error == True:
 						finish=False
 						finish_processes=True
-						ConfigClass.num_errors+=1
+						
 				else:
 					ConfigClass.num_success+=1
 				
@@ -443,15 +446,6 @@ def start():
 	
 	#Check logs folder
 	
-	#p_logs=Path(ConfigClass.logs_path)
-	
-	#if not p_logs.exists():
-	#	p_logs.mkdir(0o755, True)
-		
-	#if p_logs.exists() and p_logs.is_dir()==False:
-	#	print("Error: exists a file with the same path of logs. Delete the file or change ConfigClass.logs_path ")
-	#	exit(1)
-	
 	create_dir(ConfigClass.logs_path)
 	
 	#Prepare sftp and ssh
@@ -497,11 +491,12 @@ def start():
 		
 		p_count=0
 		
+		#Open file where save servers failed and last server executed fine.
+		
+		f=open(".resume.py", "w+")
+		
 		print(Fore.WHITE+Style.BRIGHT +"Welcome to Protozoo!!")
 		print(Fore.YELLOW +"Executing task <"+task_name+"> in "+str(num_servers)+" machines")
-		
-		#$climate->white()->bold()->out('Welcome to Protozoo');
-		#$climate->yellow()->out('Executing task <'.$options['task'].'> in '.$c_servers.' machines');
 	
 		show_progress(p_count)
 	

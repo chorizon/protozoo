@@ -29,8 +29,12 @@ MariaDBAction.script_interpreter='python3'
 MariaDBAction.parameters=''
 MariaDBAction.extra_files=[]
 
-#ConfigPanel::$scripts['agent']['apache']=array('name' => 'Apache Webserver', 'description' => 'Script for install the most famous webserver in the world for debian jessie', 'script_path' => 'libraries/install_apache.py', 'script_interpreter' => 'python3', 'service' => 'webserver');
+AliveAction=ConfigAction()
 
-#ConfigPanel::$scripts['agent']['python3']=array('name' => 'Python Language', 'description' => 'Script language very powerful, very used for spanel for internal tasks', 'script_path' => 'libraries/install_python.sh', 'script_interpreter' => 'sh');
-
-#ConfigPanel::$scripts['agent']['php']=array('name' => 'PHP', 'description' => 'Language used in web applications', 'script_path' => 'libraries/install_php.py', 'script_interpreter' => 'python3', 'parameters' => array(), 'extra_files' => array('files/spanel.conf'));
+AliveAction.codename='Alive'
+AliveAction.name='Alive Test'
+AliveAction.description='Script for tests if servers are alive'
+AliveAction.script_path='libraries/dummy.sh'
+AliveAction.script_interpreter='sh'
+AliveAction.parameters=''
+AliveAction.extra_files=[]
