@@ -3,6 +3,7 @@
 class ConfigTask:
 
 	task=''
+	info=''
 	action=[]
 	
 class ConfigAction:

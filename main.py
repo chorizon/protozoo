@@ -48,6 +48,8 @@ def make_task(rsa, ssh, task_name, features):
 	
 	#Check if exists file with config_task
 	
+	#Need revision
+	
 	if 'config_task' not in locals():
 		
 		try:
@@ -364,6 +366,7 @@ def start():
 	parser.add_argument('--task', help='The task to execute', required=True)
 	parser.add_argument('--profile', help='The profile used for make tasks', required=False)
 	parser.add_argument('--resume', help='If error, begin the tasks in the server where the fail ', required=False, nargs='?', const='1')
+	parser.add_argument('--json', help='Save the progress in an file in json format', required=False, nargs='?', const='1')
 	
 	args = parser.parse_args()
 	
@@ -499,6 +502,7 @@ def start():
 		
 		print(Fore.WHITE+Style.BRIGHT +"Welcome to Protozoo!!")
 		print(Fore.YELLOW +"Executing task <"+task_name+"> in "+str(num_servers)+" machines")
+		print(Fore.WHITE+Style.BRIGHT +ConfigTask.info)
 	
 		show_progress(p_count)
 	
