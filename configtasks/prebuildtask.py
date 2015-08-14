@@ -38,3 +38,14 @@ AliveAction.script_path='libraries/dummy.sh'
 AliveAction.script_interpreter='sh'
 AliveAction.parameters=''
 AliveAction.extra_files=[]
+
+UpdateAction=ConfigAction()
+
+UpdateAction.codename='Update'
+UpdateAction.name='Update a server'
+UpdateAction.description='Script for update a server'
+UpdateAction.script_path='libraries/update.sh'
+UpdateAction.script_interpreter='sh'
+UpdateAction.parameters=''
+UpdateAction.extra_files=[]
+

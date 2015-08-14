@@ -49,4 +49,8 @@ class ConfigClass:
 	
 	num_success=0
 	
+	num_total=0
+	
+	num_servers=0
+	
 	file_resume=None
