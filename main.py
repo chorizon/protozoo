@@ -30,8 +30,11 @@ def show_progress(percent):
         sys.stdout.flush()
         print("\r")
         
+config_task_reload=None
 
 def make_task(rsa, ssh, task_name, features):
+    
+    global config_task_reload
     
     server=features['hostname']
     
@@ -51,11 +54,11 @@ def make_task(rsa, ssh, task_name, features):
     
     #Need revision
     
-    if 'config_task' not in locals():
+    if config_task_reload==None:
         
         try:
     
-            import_module('config.config_'+task_name)
+            config_task_reload=import_module('config.config_'+task_name)
             
         except:
             
@@ -66,7 +69,7 @@ def make_task(rsa, ssh, task_name, features):
     else:
         try:
             
-            reload('config.config_'+task_name)
+            reload(config_task_reload)
             
         except:
             pass
