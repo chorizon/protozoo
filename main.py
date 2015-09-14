@@ -172,6 +172,10 @@ def make_task(rsa, ssh, task_name, features):
     
     #Execute the task in the server
     
+    if len(ConfigTask.action)==0:
+        logging.warning('Error, check your task. The number of actions in task is zero')
+        exit(1)
+    
     for action in ConfigTask.action:
         
         logging.info("Begin task "+action.name+"...")
@@ -238,8 +242,8 @@ def make_task(rsa, ssh, task_name, features):
         command_to_execute=action.script_interpreter+" "+dest_file+" "+action.parameters
         
         try:
-    
-            stdin, stdout, stderr = ssh.exec_command(command_to_execute, get_pty=True)
+			#, get_pty=True
+            stdin, stdout, stderr = ssh.exec_command(command_to_execute)
             
             """
             while stdout.channel.exit_status_ready()!=True:
@@ -455,7 +459,6 @@ def start():
         
         if os.path.isfile(task_path_route):
             break
-    
     # Load config for the task
     
     try:
@@ -467,8 +470,8 @@ def start():
         print("Error: "+str(e))
         exit(1)
     except:
-        pass
-    
+        print("Error: cannot load the task, exists "+task_path+" file?")
+        exit(1)
     # Load config.py
     
     try:

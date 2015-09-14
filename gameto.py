@@ -21,6 +21,8 @@ def start():
 	parser.add_argument('--remove_ip', help='If true, the ip list is used for delete servers', required=False, nargs='?', const='1')
 	
 	parser.add_argument('--os', help='The operating system of new servers', required=True)
+	
+	parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
 
 	args = parser.parse_args()
 
@@ -52,12 +54,27 @@ def start():
 		for ipaddr in ipaddress.summarize_address_range( ipaddress.ip_address(range_ips[0]), ipaddress.ip_address(range_ips[1])):
 			for ip in ipaddr:
 				arr_ip.append(ip)
+	
 	elif args.ip_list is not None:
 		ip_list=args.ip_list.split(',')
+		
 		for ip in ip_list:
 			arr_ip.append(ipaddress.ip_address(ip))
 		
-		print("My new ip is "+str(arr_ip[0]))
+		#print("My new ip is "+str(arr_ip[0]))
+
+	if len(arr_ip)>0:
+		
+		#Save
+		if args.save_in_db==None:
+			print('Saving new servers in file...')
+
+		else:
+			
+			
+			pass
+		
+		pass
 
 		"""
 		if len(range_ips)>2:
