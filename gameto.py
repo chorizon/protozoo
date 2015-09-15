@@ -32,12 +32,10 @@ def start():
 	parser.add_argument('--file', help='The domain name of new servers', required=True)
 
 	args = parser.parse_args()
-
+	
 	if args.ip_range==None and args.ip_list==None:
 		
 		parser.error('You need --ip_range or --ip_list options')
-	
-	#print(args.ip_range)
 	
 	arr_ip=[]
 	
@@ -67,8 +65,6 @@ def start():
 		
 		for ip in ip_list:
 			arr_ip.append(ipaddress.ip_address(ip))
-		
-		#print("My new ip is "+str(arr_ip[0]))
 
 	if len(arr_ip)>0:
 		
@@ -78,12 +74,16 @@ def start():
 		
 		old_servers={}
 		
+		check_old=0
+		
 		try:
 		
 			servers=import_module('config.'+args.file)
 
-			for server in servers.servers:
+			for k, server in enumerate(servers.servers):
 				old_servers[server['ip']]=1
+
+			check_old=1
 
 		except:
 
@@ -93,6 +93,7 @@ def start():
 		
 		file_txt="#!/usr/bin/python3\n"
 		file_txt+="servers=[]\n"
+		
 		for ip in arr_ip:
 			prefix=''
 			
@@ -106,17 +107,23 @@ def start():
 				hostname=str(ip).replace('.','')+prefix+'.'+args.domainname
 				
 				file_txt+="servers.append({'hostname': '"+hostname+"', 'os_codename': '"+str(args.os)+"', 'ip': '"+str(ip)+"', 'name': '"+str(hostname).replace('.', '_')+"'})\n"
-
-		#print(file_txt)
-		#exit()
+			elif args.remove_ip=='1':
+				
+				old_servers[str(ip)]=0
+				
+				pass
 
 		#Add old servers
 		
-		for server in servers.servers:
-			
-			file_txt+="servers.append({'hostname': '"+server['hostname']+"', 'os_codename': '"+server['os_codename']+"', 'ip': '"+server['ip']+"', 'name': '"+server['name']+"'})\n"
+		if check_old==1:
 		
-		#print(file_txt)
+			for server in servers.servers:
+				
+				if old_servers[server['ip']]==1:
+					
+					file_txt+="servers.append({'hostname': '"+server['hostname']+"', 'os_codename': '"+server['os_codename']+"', 'ip': '"+server['ip']+"', 'name': '"+server['name']+"'})\n"
+		
+		#Save file
 
 		file=open(new_file, 'w+')
 		
