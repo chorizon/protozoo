@@ -27,7 +27,7 @@ def start():
 	
 	parser.add_argument('--prefix', help='A prefix used for define things in the hostname')
 	
-	#parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
+	parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
 	
 	parser.add_argument('--file', help='The domain name of new servers', required=True)
 
@@ -69,65 +69,86 @@ def start():
 	if len(arr_ip)>0:
 		
 		#Save
-		#if args.save_in_db==None:
-		print('Saving new servers in file...')
-		
-		old_servers={}
-		
-		check_old=0
-		
-		try:
-		
-			servers=import_module('config.'+args.file)
-
-			for k, server in enumerate(servers.servers):
-				old_servers[server['ip']]=1
-
-			check_old=1
-
-		except:
-
-			pass
-		
-		new_file='config/'+args.file+'.py'
-		
-		file_txt="#!/usr/bin/python3\n"
-		file_txt+="servers=[]\n"
-		
-		for ip in arr_ip:
-			prefix=''
+		if args.save_in_db==None:
+			print('Saving new servers in file...')
 			
-			if args.prefix!=None:
-				prefix="-"+args.prefix.replace('.', '-')
+			old_servers={}
 			
-			old_servers[str(ip)]=old_servers.get(str(ip), 0)
+			check_old=0
 			
-			if old_servers[str(ip)]==0:
+			try:
 			
-				hostname=str(ip).replace('.','')+prefix+'.'+args.domainname
-				
-				file_txt+="servers.append({'hostname': '"+hostname+"', 'os_codename': '"+str(args.os)+"', 'ip': '"+str(ip)+"', 'name': '"+str(hostname).replace('.', '_')+"'})\n"
-			elif args.remove_ip=='1':
-				
-				old_servers[str(ip)]=0
-				
+				servers=import_module('config.'+args.file)
+
+				for k, server in enumerate(servers.servers):
+					old_servers[server['ip']]=1
+
+				check_old=1
+
+			except:
+
 				pass
-
-		#Add old servers
-		
-		if check_old==1:
-		
-			for server in servers.servers:
+			
+			new_file='config/'+args.file+'.py'
+			
+			file_txt="#!/usr/bin/python3\n"
+			file_txt+="servers=[]\n"
+			
+			for ip in arr_ip:
+				prefix=''
 				
-				if old_servers[server['ip']]==1:
+				if args.prefix!=None:
+					prefix="-"+args.prefix.replace('.', '-')
+				
+				old_servers[str(ip)]=old_servers.get(str(ip), 0)
+				
+				if old_servers[str(ip)]==0:
+				
+					hostname=str(ip).replace('.','')+prefix+'.'+args.domainname
 					
-					file_txt+="servers.append({'hostname': '"+server['hostname']+"', 'os_codename': '"+server['os_codename']+"', 'ip': '"+server['ip']+"', 'name': '"+server['name']+"'})\n"
-		
-		#Save file
+					file_txt+="servers.append({'hostname': '"+hostname+"', 'os_codename': '"+str(args.os)+"', 'ip': '"+str(ip)+"', 'name': '"+str(hostname).replace('.', '_')+"'})\n"
+				elif args.remove_ip=='1':
+					
+					old_servers[str(ip)]=0
+					
+					pass
 
-		file=open(new_file, 'w+')
+			#Add old servers
+			
+			if check_old==1:
+			
+				for server in servers.servers:
+					
+					if old_servers[server['ip']]==1:
+						
+						file_txt+="servers.append({'hostname': '"+server['hostname']+"', 'os_codename': '"+server['os_codename']+"', 'ip': '"+server['ip']+"', 'name': '"+server['name']+"'})\n"
 		
-		file.write(file_txt)
-		
-		file.close()
+			#Save file
 
+			file=open(new_file, 'w+')
+			
+			file.write(file_txt)
+			
+			file.close()
+		else:
+			#Import settings for db
+			
+			try:
+			
+				config_db=import_module('config.config_db')
+				
+			except:
+				
+				print('You need a configuration file called config_db.py for use a database for save servers data. Also you need cromosoma module installed')
+				
+				exit(1)
+			
+			pass
+
+			#Load model
+			
+			config_db=import_module('protozoo.models.servers')
+			
+			
+			
+			

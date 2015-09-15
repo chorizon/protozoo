@@ -58,11 +58,11 @@ def make_task(rsa, ssh, task_name, features):
         
         try:
     
-            config_task_reload=import_module('config.config_'+task_name)
+            config_task_reload=import_module('settings.config_'+task_name)
             
         except:
             
-            #print("Task need a config.py in "+task_path)
+            #print("Task need a settings.py in "+task_path)
             #exit(1)
             pass
         
@@ -74,7 +74,7 @@ def make_task(rsa, ssh, task_name, features):
         except:
             pass
             
-    #       print("Task need a config.py in "+task_path)
+    #       print("Task need a settings.py in "+task_path)
     #       exit(1)
     
     # Load config for this host for this task
@@ -83,18 +83,18 @@ def make_task(rsa, ssh, task_name, features):
         
         try:
     
-            config_task_server=import_module('config.config_'+task_name+'_'+features['name'])
+            config_task_server=import_module('settings.config_'+task_name+'_'+features['name'])
             
         except ImportError as e:
             
-            #print("Error, cannot load config for config.config_"+task_name+'_'+features['name']+": "+str(e))
+            #print("Error, cannot load config for settings.config_"+task_name+'_'+features['name']+": "+str(e))
             #exit(1)
             pass
         
     else:
         try:
             
-            config_task_server=import_module('config.config_'+task_name+'_'+features['name'])
+            config_task_server=import_module('settings.config_'+task_name+'_'+features['name'])
             
         except:
             pass
@@ -440,7 +440,7 @@ def start():
     
     try:
         
-        profile=import_module('config.'+args.profile)
+        profile=import_module('settings.'+args.profile)
         
     except ImportError as e:
         
@@ -472,11 +472,11 @@ def start():
     except:
         print("Error: cannot load the task, exists "+task_path+" file?")
         exit(1)
-    # Load config.py
+    # Load settings.py
     
     try:
         
-        config=import_module('config.config')
+        config=import_module('settings.config')
         
     except SyntaxError as e:
         
