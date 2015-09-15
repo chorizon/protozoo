@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import sys, traceback
 import argparse
 import ipaddress
 from importlib import import_module
@@ -25,11 +25,11 @@ def start():
 	
 	parser.add_argument('--domainname', help='The domain name of new servers', required=True)
 	
-	parser.add_argument('--prefix', help='A prefix used for define things in the hostname')
+	parser.add_argument('--type', help='The type of servers', required=True)
 	
 	parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
 	
-	parser.add_argument('--file', help='The domain name of new servers', required=True)
+	parser.add_argument('--profile', help='The profile where the servers are saved', required=True)
 
 	args = parser.parse_args()
 	
@@ -78,7 +78,7 @@ def start():
 			
 			try:
 			
-				servers=import_module('config.'+args.file)
+				servers=import_module('settings.'+args.profile)
 
 				for k, server in enumerate(servers.servers):
 					old_servers[server['ip']]=1
@@ -89,7 +89,7 @@ def start():
 
 				pass
 			
-			new_file='config/'+args.file+'.py'
+			new_file='config/'+args.profile+'.py'
 			
 			file_txt="#!/usr/bin/python3\n"
 			file_txt+="servers=[]\n"
@@ -97,8 +97,8 @@ def start():
 			for ip in arr_ip:
 				prefix=''
 				
-				if args.prefix!=None:
-					prefix="-"+args.prefix.replace('.', '-')
+				if args.type!=None:
+					prefix="-"+args.type.replace('.', '-')
 				
 				old_servers[str(ip)]=old_servers.get(str(ip), 0)
 				
@@ -133,13 +133,20 @@ def start():
 		else:
 			#Import settings for db
 			
+			print('Saving new servers in database...')
+			
 			try:
 			
-				config_db=import_module('config.config_db')
+				config_db=import_module('settings.config_db')
 				
 			except:
 				
 				print('You need a configuration file called config_db.py for use a database for save servers data. Also you need cromosoma module installed')
+				
+				print("Exception in user code:")
+				print("-"*60)
+				traceback.print_exc(file=sys.stdout)
+				print("-"*60)
 				
 				exit(1)
 			
@@ -147,8 +154,37 @@ def start():
 
 			#Load model
 			
-			config_db=import_module('protozoo.models.servers')
+			model=import_module('protozoo.models.servers')
 			
+			if args.remove_ip=='1':
 			
+				for ip in arr_ip:
+					
+					model.server.conditions='WHERE ip="'+str(ip)+'"'
+
+					model.server.delete()
+					
+			else:
+				
+				for ip in arr_ip:
+					
+					#file_txt+="servers.append({'hostname': '"+hostname+"', 'os_codename': '"+str(args.os)+"', 'ip': '"+str(ip)+"', 'name': '"+str(hostname).replace('.', '_')+"'})\n"
+					
+					#Check if server exists in this profile
+					
+					model.server.conditions='WHERE ip="'+str(ip)+'" and profile="'+args.profile+'"'
+					
+					num_server=model.server.select_count()
+					
+					if num_server==0:
+				
+						if args.type!=None:
+							type_server="-"+args.type.replace('.', '-')
+						
+						hostname=str(ip).replace('.','')+type_server+'.'+args.domainname
+
+						arr_server={'hostname': hostname, 'os_codename': str(args.os), 'ip': str(ip), 'name': str(hostname).replace('.', '_'), 'type': args.type, 'profile': args.profile}
+						
+						model.server.insert(arr_server)
 			
 			
