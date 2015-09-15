@@ -2,6 +2,7 @@
 
 import argparse
 import ipaddress
+from importlib import import_module
 from platform import python_version_tuple
 
 def start():
@@ -22,7 +23,13 @@ def start():
 	
 	parser.add_argument('--os', help='The operating system of new servers', required=True)
 	
-	parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
+	parser.add_argument('--domainname', help='The domain name of new servers', required=True)
+	
+	parser.add_argument('--prefix', help='A prefix used for define things in the hostname')
+	
+	#parser.add_argument('--save_in_db', help='Save in a database (you need special config)', required=False, nargs='?', const='1')
+	
+	parser.add_argument('--file', help='The domain name of new servers', required=True)
 
 	args = parser.parse_args()
 
@@ -66,99 +73,54 @@ def start():
 	if len(arr_ip)>0:
 		
 		#Save
-		if args.save_in_db==None:
-			print('Saving new servers in file...')
-
-		else:
-			
-			
-			pass
+		#if args.save_in_db==None:
+		print('Saving new servers in file...')
 		
-		pass
-
-		"""
-		if len(range_ips)>2:
-			parser.error('Sorry, the format of ip\s is for example: 192.168.1.5-192.168.2.33')
-
-		if range_ips[0]<range_ips[1]:
-			parser.error('Sorry, the range of ip\'s is not correct')
-		"""
-		"""
-		if range_ips[1]>'255.255.255.255':
-			parser.error('Sorry, the range of ip\'s is not correct.')
-		"""
-		"""
+		old_servers={}
+		
 		try:
-			
-
-		comp_ip1=range_ips[0].split('.')
-		comp_ip2=range_ips[1].split('.')
 		
-		if len(comp_ip1)<4 or len(comp_ip1)>4:
-			parser.error('Sorry, the range of ip\'s is not correct')
-			
+			servers=import_module('config.'+args.file)
 
-		if len(comp_ip2)<4 or len(comp_ip2)>4:
-			parser.error('Sorry, the range of ip\'s is not correct')
-		"""
-		"""
-		calc_first=0
-		calc_second=0
-		calc_third=0
-		calc_fourth=0
-		"""
-		#for x in range(0, 4):
-		"""
-		for first in range(int(comp_ip1[0]), int(comp_ip2[0])):
-			calc_first+=1
+			for server in servers.servers:
+				old_servers[server['ip']]=1
 
-		for second in range(int(comp_ip1[1]), int(comp_ip2[1])):
-			calc_second+=1
-				
-		for third in range(int(comp_ip1[2]), int(comp_ip2[2])):
-			calc_third+=1
-		
-		for fourth in range(int(comp_ip1[3]), int(comp_ip2[3])):
-			calc_fourth+=1
+		except:
 
-		print(calc_fourth)
-		"""
-		"""
-		calculate=True
-		
-		ip_new=[int(comp_ip1[0]), int(comp_ip1[1]), int(comp_ip1[2]), int(comp_ip1[3])]
-		
-		while(calculate):
-			
-			new_ip=str(ip_new[0])+'.'+str(ip_new[1])+'.'+str(ip_new[2])+'.'+str(ip_new[3])
-			
-			print(new_ip)
-			
-			ip_new[3]+=1
-			if ip_new[3]>255:
-				ip_new[3]=0
-				ip_new[2]+=1
-				if ip_new[2]>255:
-					ip_new[2]=0
-					ip_new[1]+=1
-					if ip_new[1]>255:
-						ip_new[1]=0
-						ip_new[0]+=1			
-						if ip_new[0]>255:
-							raise NameError('Sorry, cannot create an ip with a range > 255')
-
-			#print(ip_new[0], ip_new[1], ip_new[2], ip_new[3])
-			
-			
-			
-			if new_ip==range_ips[1]:
-				break
-			
 			pass
-			"""
-
-		#192.168.1.1 192.168.1.5
-		#Need the num of ips and simply sum checking 255 value
-		#192.168.0.1 - 192.168.1.1
-		#       0   0  1 255
 		
+		new_file='config/'+args.file+'.py'
+		
+		file_txt="#!/usr/bin/python3\n"
+		file_txt+="servers=[]\n"
+		for ip in arr_ip:
+			prefix=''
+			
+			if args.prefix!=None:
+				prefix="-"+args.prefix.replace('.', '-')
+			
+			old_servers[str(ip)]=old_servers.get(str(ip), 0)
+			
+			if old_servers[str(ip)]==0:
+			
+				hostname=str(ip).replace('.','')+prefix+'.'+args.domainname
+				
+				file_txt+="servers.append({'hostname': '"+hostname+"', 'os_codename': '"+str(args.os)+"', 'ip': '"+str(ip)+"', 'name': '"+str(hostname).replace('.', '_')+"'})\n"
+
+		#print(file_txt)
+		#exit()
+
+		#Add old servers
+		
+		for server in servers.servers:
+			
+			file_txt+="servers.append({'hostname': '"+server['hostname']+"', 'os_codename': '"+server['os_codename']+"', 'ip': '"+server['ip']+"', 'name': '"+server['name']+"'})\n"
+		
+		#print(file_txt)
+
+		file=open(new_file, 'w+')
+		
+		file.write(file_txt)
+		
+		file.close()
+
