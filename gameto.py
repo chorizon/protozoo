@@ -89,7 +89,7 @@ def start():
 
 				pass
 			
-			new_file='config/'+args.profile+'.py'
+			new_file='settings/'+args.profile+'.py'
 			
 			file_txt="#!/usr/bin/python3\n"
 			file_txt+="servers=[]\n"
@@ -134,6 +134,8 @@ def start():
 			#Import settings for db
 			
 			print('Saving new servers in database...')
+			
+			new_file='settings/'+args.profile+'.py'
 			
 			try:
 			
@@ -186,5 +188,26 @@ def start():
 						arr_server={'hostname': hostname, 'os_codename': str(args.os), 'ip': str(ip), 'name': str(hostname).replace('.', '_'), 'type': args.type, 'profile': args.profile}
 						
 						model.server.insert(arr_server)
+			#Save file
 			
+			file_txt="#!/usr/bin/python3\n\n"
+			
+			file_txt+="from protozoo.models.servers import server\n\n"
+			file_txt+="from settings import config_db\n\n"
+			
+			file_txt+="servers=[]\n\n"
+			
+			file_txt+="server.conditions='where type=\""+args.type+"\" and profile=\""+args.profile+"\"'\n\n"
+			
+			file_txt+="cur=server.select()\n\n"
+			
+			file_txt+="for row in cur:\n"
+			
+			file_txt+="    servers.append(row)\n"
+
+			file=open(new_file, 'w+')
+			
+			file.write(file_txt)
+			
+			file.close()
 			
