@@ -1,0 +1,1 @@
+pastafari ALL = NOPASSWD: /usr/bin/php /home/pastafari/console.php -m pastafari -c load *
