@@ -15,7 +15,7 @@ PastafariAction.script_interpreter='python3'
 #You need define secret key and ip --secret_key the_secret_key --ip 192.168.1.1
 
 PastafariAction.parameters='--user pastafari --port 2048'
-PastafariAction.extra_files=['apis/pastafari/files/php-fpm/pastafari-fpm.conf', 'apis/pastafari/files/nginx/pastafari-nginx.conf', 'apis/pastafari/files/sudo/supastafari', 'apis/pastafari/files/phango/config.php']
+PastafariAction.extra_files=['apis/pastafari/files/php-fpm/pastafari-fpm.conf', 'apis/pastafari/files/nginx/pastafari-nginx.conf', 'apis/pastafari/files/sudo/supastafari', 'apis/pastafari/files/phango/config.php', 'apis/pastafari/files/phango/composer.json']
 
 
 ConfigTask.task='pastafari'

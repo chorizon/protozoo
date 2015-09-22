@@ -1,1 +1,1 @@
-pastafari ALL = NOPASSWD: /usr/bin/php /home/pastafari/console.php -m pastafari -c load *
+pastafari ALL = NOPASSWD: /usr/bin/php /home/pastafari/site/pastafari/console.php -m pastafari -c load *

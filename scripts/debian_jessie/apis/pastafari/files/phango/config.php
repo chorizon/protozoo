@@ -27,6 +27,6 @@ define('ADMIN_FOLDER', 'admin');
 
 define('SECRET_KEY', 'secret_key');
 
-define('SECRET_KEY_HASHED_WITH_PASS', 'secret_key_with_pass');
+define('SECRET_KEY_HASHED_WITH_PASS', 'the_pass');
 
 ?>
