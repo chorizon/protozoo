@@ -1,0 +1,52 @@
+
+{
+    "name": "phangoapp\/framework",
+    "description": "A framework for create nice apps",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Antonio de la Rosa",
+            "email": "webmaster@web-t-sys.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/pharouter.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/phaview.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/phamodels.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/phautils.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/phai18n.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/phangoapp\/phalibs.git"
+        }
+    ],
+    "require": {
+        "phangoapp\/pharouter": "dev-master",
+        "phangoapp\/phaview": "dev-master",
+        "phangoapp\/phamodels": "dev-master",
+        "phangoapp\/phautils": "dev-master",
+        "phangoapp\/phai18n": "dev-master",
+        "phangoapp\/phalibs": "dev-master",
+        "ext-gd": "*",
+        "ext-libxml": "*",
+        "league\/climate": "dev-master",
+        "symfony\/process": "@stable",
+        "monolog\/monolog": "@stable"
+    }
+}
