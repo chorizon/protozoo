@@ -4,7 +4,7 @@ Python3Action=ConfigAction()
 Python3Action.codename='python3'
 Python3Action.name='Python Language'
 Python3Action.description='Script language very powerful, very used for spanel for internal tasks'
-Python3Action.script_path='libraries/install_python.sh'
+Python3Action.script_path='languages/install_python.sh'
 Python3Action.script_interpreter='sh'
 Python3Action.parameters=''
 Python3Action.extra_files=[]
@@ -24,7 +24,7 @@ MariaDBAction=ConfigAction()
 MariaDBAction.codename='mariadb'
 MariaDBAction.name='MariaDB Database Server'
 MariaDBAction.description='Script for install the most famous db server in debian jessie'
-MariaDBAction.script_path='libraries/install_mariadb.py'
+MariaDBAction.script_path='db/mariadb/mariadb.py'
 MariaDBAction.script_interpreter='python3'
 MariaDBAction.parameters=''
 MariaDBAction.extra_files=[]
@@ -49,3 +49,32 @@ UpdateAction.script_interpreter='sh'
 UpdateAction.parameters=''
 UpdateAction.extra_files=[]
 
+NginxAction=ConfigAction()
+
+NginxAction.codename='Nginx'
+NginxAction.name='Install Nginx in a server'
+NginxAction.description='Script for install nginx in servers'
+NginxAction.script_path='webservers/nginx.py'
+NginxAction.script_interpreter='python3'
+NginxAction.parameters=''
+NginxAction.extra_files=[]
+
+PhpFpmAction=ConfigAction()
+
+PhpFpmAction.codename='PhpFpm'
+PhpFpmAction.name='Install PhpFpm in a server'
+PhpFpmAction.description='Script for install php-fpm in servers'
+PhpFpmAction.script_path='languages/php-fpm.py'
+PhpFpmAction.script_interpreter='python3'
+PhpFpmAction.parameters=''
+PhpFpmAction.extra_files=[]
+
+GitAction=ConfigAction()
+
+GitAction.codename='Git'
+GitAction.name='Install Git in a server'
+GitAction.description='Script for install php-fpm in servers'
+GitAction.script_path='cvs/git.py'
+GitAction.script_interpreter='python3'
+GitAction.parameters=''
+GitAction.extra_files=[]

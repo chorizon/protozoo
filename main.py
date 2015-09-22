@@ -132,7 +132,7 @@ def make_task(rsa, ssh, task_name, features):
     
     except:
 
-        logging.warning("Error using sftp:"+ str(sys.exc_info()[0]))
+        logging.warning("Error using sftp:"+ str(sys.exc_info()[1]))
         exit(1)
         
     #Create tmp if not exists
@@ -165,7 +165,7 @@ def make_task(rsa, ssh, task_name, features):
             exit(1)
             
     except:
-        logging.warning("Error deleting tmp:"+ str(sys.exc_info()[0]))
+        logging.warning("Error deleting tmp:"+ str(sys.exc_info()[1]))
         exit(1)
     
     #logging.info("Running actions..., you can see the progress in this log: "+path_log)
@@ -213,7 +213,7 @@ def make_task(rsa, ssh, task_name, features):
             
         except:
 
-            logging.warning("Error uploading files:"+ str(sys.exc_info()[0]))
+            logging.warning("Error uploading files:"+ str(sys.exc_info()[1]))
             exit(1)
         
         logging.info("Uploaded file:"+source_file)
@@ -232,7 +232,7 @@ def make_task(rsa, ssh, task_name, features):
             
             except:
 
-                logging.warning("Error uploading files:"+ str(sys.exc_info()[0]))
+                logging.warning("Error uploading files:"+ str(sys.exc_info()[1]))
                 exit(1)
             
             logging.info("Uploaded file:"+extra_source_file)
@@ -420,7 +420,7 @@ def start():
     
     #Prepare routes for scripts and logs
     
-    ConfigClass.scripts_path=['scripts', 'protozoo/scripts']
+    #ConfigClass.scripts_path=['scripts', 'protozoo/scripts']
     
     ConfigClass.logs_path='logs'
     
