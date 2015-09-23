@@ -99,7 +99,7 @@ secret_key=args.secret_key
 
 # Generate random secret_key for pastafari. For this things i hate the python documentation
 
-random_bytes = os.urandom(64)
+random_bytes = os.urandom(24)
 secret_key_pastafari = b64encode(random_bytes).decode('utf-8').strip()
 
 f=open('tmp/config.php')
