@@ -17,7 +17,8 @@ if call("sudo php /home/"+user+"/site/pastafari/composer.phar -d=/home/"+user+"/
     exit(1)
 else:
     print('Updated phango')
-    
+
+"""    
 chdir("/home/"+user+"/site/pastafari/modules/pastafari")
 
 if call("sudo git pull",  shell=True) > 0:
@@ -25,3 +26,4 @@ if call("sudo git pull",  shell=True) > 0:
     exit(1)
 else:
     print('Updated pastafari')
+"""
