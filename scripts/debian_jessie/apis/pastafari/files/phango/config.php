@@ -5,9 +5,9 @@ use PhangoApp\PhaRouter\Routes;
 
 Routes::$root_url='/';
 
-Routes::$app='pastafari';
+Routes::$app='chorizon/pastafari';
 
-Routes::$apps=['pastafari'];
+Routes::$apps=['chorizon/pastafari'];
 
 /**
 * Configure database. You can configure multiple databases for different models.
