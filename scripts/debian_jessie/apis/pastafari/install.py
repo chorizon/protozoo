@@ -48,13 +48,15 @@ if call("sudo git clone https://github.com/phangoapp/phango /home/"+user+"/site/
 else:
     print('Created Phango Framework')
 
-#Install pastafari
-
+#Install pastafari, no necessary with new behaviour
+"""
 if call("sudo git clone https://github.com/chorizon/pastafari.git /home/"+user+"/site/pastafari/modules/pastafari/",  shell=True) > 0:
     print('Error, cannot install Pastafari module')
     exit(1)
 else:
     print('Added pastafari module')
+
+"""
 
 #Install composer
 

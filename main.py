@@ -471,6 +471,10 @@ def start():
         exit(1)
     except:
         print("Error: cannot load the task, exists "+task_path+" file?")
+        e = sys.exc_info()[0]
+        v = sys.exc_info()[1]
+                
+        print("Error: %s %s" % (e, v))
         exit(1)
     # Load settings.py
     
