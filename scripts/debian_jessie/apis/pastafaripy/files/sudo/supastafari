@@ -1,0 +1,2 @@
+pastafari ALL = NOPASSWD: /usr/bin/python3 modules/pastafari/daemon/daemon.py *
+
