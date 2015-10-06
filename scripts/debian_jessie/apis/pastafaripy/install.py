@@ -23,7 +23,7 @@ parser.add_argument('--secret_key', help='A secret key used for identify the ser
 
 parser.add_argument('--ip', help='The server IP from you access to this machine', required=True)
 
-parser.add_argument('--cert', help='Cert string with this format: /C=US/ST=California/L=Palo Alto/O=IT/CN=www.example.com', default='/C=US/ST=California/L=Palo Alto/O=IT/CN='+gethostname())
+parser.add_argument('--cert', help='Cert string with this format: /C=US/ST=California/O=ServerEver/L=Palo Alto/O=IT/CN=example.com/emailAddress=example@example.com', default='/C=US/ST=California/O=ServerEver/L=Palo Alto/O=IT/CN='+gethostname()+'/emailAddress=webmaster@'+gethostname())
 
 args = parser.parse_args()
 
@@ -115,10 +115,6 @@ if call("sudo mkdir "+ssl_path, shell=True) > 0:
 else:
     print('Added ssl directory for new certs')
 
-if call("sudo openssl req -nodes -x509 -newkey rsa:4096 -keyout "+ssl_path+"/pastafari.key -out "+ssl_path+"/pastafari.crt -days 1024 -subj \""+args.cert+"\"", shell=True)>0:
-    print('Error, cannot create the new cert')
-    exit(1)
-
 #Copy ca.crt for authentication https
 
 if call("sudo cp tmp/ca.crt "+ssl_path, shell=True) > 0:
@@ -126,6 +122,67 @@ if call("sudo cp tmp/ca.crt "+ssl_path, shell=True) > 0:
     exit(1)
 else:
     print('Installed ca.crt file')
+
+if call("sudo cp tmp/ca.key "+ssl_path, shell=True) > 0:
+    print('Error, cannot install ca.key file')
+    exit(1)
+else:
+    print('Installed ca.key file')
+"""
+openssl genrsa -out client.key 4096
+openssl req -new -key client.key -out client.csr -subj "/C=US/ST=California/L=Palo Alto/O=IT/CN=www.example.com"
+openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+"""
+#Create server key
+
+if call("sudo openssl genrsa -out "+ssl_path+"/pastafari.key 4096", shell=True)>0:
+    print('Error, cannot create the new ssl key')
+    exit(1)
+else:
+    print('Created the new ssl key for pastafari')
+
+#Create csr for pastafari cert
+
+if call("sudo openssl req -new -key "+ssl_path+"/pastafari.key -out "+ssl_path+"/pastafari.csr -subj \""+args.cert+"\"", shell=True)>0:
+    print('Error, cannot create the new csr')
+    exit(1)
+else:
+    print('Created the new csr for pastafari cert')
+    
+#Create signed certificated
+
+if call("sudo openssl x509 -req -in "+ssl_path+"/pastafari.csr -CA "+ssl_path+"/ca.crt -CAkey "+ssl_path+"/ca.key -set_serial 01 -out "+ssl_path+"/pastafari.crt", shell=True)>0:
+    print('Error, cannot create the new cert for pastafari')
+    exit(1)
+else:
+    print('Created the new ssl certificate for pastafari')
+
+"""
+#Create key and crt
+
+if call("sudo openssl req -nodes -x509 -newkey rsa:4096 -keyout "+ssl_path+"/pastafari.key -out "+ssl_path+"/pastafari.crt -days 1024 -subj \""+args.cert+"\"", shell=True)>0:
+    print('Error, cannot create the new cert')
+    exit(1)
+else:
+    print('Created the new cert for pastafari')
+
+#Create csr for pastafari key
+
+if call("sudo openssl req -new -key "+ssl_path+"/pastafari.key -out "+ssl_path+"/pastafari.csr -subj \""+args.cert+"\"", shell=True)>0:
+    print('Error, cannot create the new csr')
+    exit(1)
+else:
+    print('Created the new csr for pastafari')
+
+# openssl req -new -key client.key -out client.csr -subj "/C=US/ST=California/L=Palo Alto/O=IT/CN=www.example.com"
+
+#Sign the key of pastafari
+
+if call("sudo openssl x509 -req -days 1024 -in "+ssl_path+"/pastafari.csr -CA "+ssl_path+"/ca.crt -CAkey "+ssl_path+"/ca.key -set_serial 01 -out "+ssl_path+"/pastafari.crt", shell=True)>0:
+    print('Error, cannot sign the new cert')
+    exit(1)
+
+"""
 
 #Add sudo configuration
 

@@ -19,7 +19,7 @@ PastafariAction.script_interpreter='python3'
 #You need define secret key and ip --secret_key the_secret_key --ip 192.168.1.1
 
 PastafariAction.parameters='--user pastafari --port 2048'
-PastafariAction.extra_files=['apis/pastafaripy/files/uwsgi/pastafari-uwsgi.ini', 'apis/pastafaripy/files/nginx/pastafari-nginx.conf', 'apis/pastafaripy/files/sudo/supastafari', 'apis/pastafaripy/files/paramecio/config.py', 'apis/pastafaripy/files/cacert/ca.crt']
+PastafariAction.extra_files=['apis/pastafaripy/files/uwsgi/pastafari-uwsgi.ini', 'apis/pastafaripy/files/nginx/pastafari-nginx.conf', 'apis/pastafaripy/files/sudo/supastafari', 'apis/pastafaripy/files/paramecio/config.py', 'apis/pastafaripy/files/cacert/ca.crt', 'apis/pastafaripy/files/cacert/ca.key']
 
 
 ConfigTask.task='pastafari'
