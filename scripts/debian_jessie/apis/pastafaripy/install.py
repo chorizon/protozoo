@@ -268,6 +268,20 @@ if call("sudo chown -R root:root /etc/sudoers.d/pastafari", shell=True) > 0:
 else:
     print('Modify supastafari permissions')
 """
+#Create logs file
+
+if call("sudo mkdir /home/"+user+"/site/paramecio/logs", shell=True) > 0:
+    print('Error, cannot create logs directory')
+    exit(1)
+else:
+    print('Created logs directory')
+
+if call("sudo chown -R "+user+":"+user+" /home/"+user+"/site/paramecio/logs", shell=True) > 0:
+    print('Error, cannot update owners of logsdirectory')
+    exit(1)
+else:
+    print('Modified logs directory owner')
+
 
 if call("sudo chown -R root:root /home/"+user+"/site/paramecio", shell=True) > 0:
     print('Error, cannot update owners of pastafari directory')

@@ -237,9 +237,22 @@ def make_task(rsa, ssh, task_name, features):
             
             logging.info("Uploaded file:"+extra_source_file)
     
+        #Need obtain command for execute the script in first line, the unix way...
+    
+        action.script_interpreter=''
+    
+        file_line=open(source_file)      
+        
+        execute_line=file_line.readline()
+        
+        file_line.close()
+        
+        if execute_line.find("#!")==0:
+            action.script_interpreter=execute_line.replace('#!', '').strip()+' '
+    
         #Execute the script
         
-        command_to_execute=action.script_interpreter+" "+dest_file+" "+action.parameters
+        command_to_execute=action.script_interpreter+dest_file+" "+action.parameters
         
         try:
 			#, get_pty=True
@@ -402,8 +415,9 @@ def start():
 
     parser.add_argument('--task', help='The task to execute', required=True)
     parser.add_argument('--profile', help='The profile used for make tasks', required=False)
-    parser.add_argument('--resume', help='If error, begin the tasks in the server where the fail ', required=False, nargs='?', const='1')
-    parser.add_argument('--json', help='Save the progress in an file in json format', required=False, nargs='?', const='1')
+    #parser.add_argument('--resume', help='If error, begin the tasks in the server where the fail ', required=False, nargs='?', const='1')
+    #parser.add_argument('--json', help='Save the progress in an file in json format', required=False, nargs='?', const='1')
+    #parser.add_argument('--daemon', help='Daemonize the process, send an email when finish', required=False, nargs='?', const='1')
     
     args = parser.parse_args()
     
