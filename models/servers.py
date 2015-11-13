@@ -19,4 +19,6 @@ server.register(corefields.CharField('type'))
 
 server.register(corefields.CharField('profile'))
 
+server.register(corefields.BooleanField('status'))
+
 server.fields['ip'].index=True

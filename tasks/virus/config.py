@@ -16,7 +16,7 @@ VirusAction.script_interpreter='python3'
 #You need define secret key and ip --secret_key the_secret_key --ip 192.168.1.1
 
 VirusAction.parameters='--user '+ConfigClass.remote_user
-VirusAction.extra_files=[]
+VirusAction.extra_files=['apis/virus/config.py']
 
 
 ConfigTask.task='Virus API'

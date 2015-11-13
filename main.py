@@ -37,6 +37,7 @@ def make_task(rsa, ssh, task_name, features):
     global config_task_reload
     
     server=features['hostname']
+    server_ip=features['ip']
     
     #Opening connection with log
     
@@ -106,7 +107,7 @@ def make_task(rsa, ssh, task_name, features):
     
     try:
     
-        ssh.connect(server, port=ConfigClass.port, username=ConfigClass.remote_user, password=None, pkey=rsa, key_filename=ConfigClass.private_key, timeout=None, allow_agent=True, look_for_keys=True, compress=False, sock=None, gss_auth=False, gss_kex=False, gss_deleg_creds=True, gss_host=None, banner_timeout=None)
+        ssh.connect(server_ip, port=ConfigClass.port, username=ConfigClass.remote_user, password=None, pkey=rsa, key_filename=ConfigClass.private_key, timeout=None, allow_agent=True, look_for_keys=True, compress=False, sock=None, gss_auth=False, gss_kex=False, gss_deleg_creds=True, gss_host=None, banner_timeout=None)
     
     except paramiko.SSHException as e:
         logging.warning("Error: cannot connect to the server "+server+" "+str(e))
